@@ -1,32 +1,29 @@
-const { readArrayFromFile } = require("./lib");
-
-const run_part1 = () => {
-  const depths = readArrayFromFile("./input/day1.txt", "\n");
-  let numDeeper = 0;
-  for (let a = 0; a < depths.length; a++) {
-    if (a !== 0 && depths[a] > depths[a - 1]) {
-      numDeeper++
-    }
-  }
-
-  console.log(`Num deeper: ${numDeeper}`);
-}
+const fs = require("fs");
+const { sum, maxIndex } = require("./lib");
 
 const run = () => {
-  const depths = readArrayFromFile("./input/day1.txt", "\n");
-  let numDeeper = 0;
-  let prevWindow = -1;
-  for (let a = 0; a < depths.length; a++) {
-    if (a !== 0 && a !== 1) {
-      const currWindow = depths[a] + depths[a - 1] + depths[a - 2];
-      if (prevWindow !== -1 && currWindow > prevWindow) {
-        numDeeper++;
-      }
-      prevWindow = currWindow;
-    }
-  }
+  const elves = fs.readFileSync("./input/day1.txt").toString().split("\n\n").map((data) => {
+    return data.split("\n").map((n) => {
+      return parseInt(n);
+    });
+  });
 
-  console.log(`Num deeper: ${numDeeper}`);
+  let elfSums = elves.map((arr) => {
+    return sum(arr);
+  });
+
+  let total = 0;
+  let maxI = maxIndex(elfSums);
+  total += elfSums[maxI];
+  elfSums = elfSums.slice(0, maxI).concat(elfSums.slice(maxI + 1));
+  maxI = maxIndex(elfSums);
+  total += elfSums[maxI];
+  elfSums = elfSums.slice(0, maxI).concat(elfSums.slice(maxI + 1));
+  maxI = maxIndex(elfSums);
+  total += elfSums[maxI];
+
+
+  console.log(total);
 }
 
 module.exports = { run };
