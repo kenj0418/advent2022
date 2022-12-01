@@ -1,27 +1,19 @@
 const fs = require("fs");
-const { sum, maxIndex } = require("./lib");
+const { sum, maxIndex, readSingleLineArraysFromFile } = require("./lib");
 
 const run = () => {
-  const elves = fs.readFileSync("./input/day1.txt").toString().split("\n\n").map((data) => {
-    return data.split("\n").map((n) => {
-      return parseInt(n);
-    });
-  });
+  const elves = readSingleLineArraysFromFile("./input/day1.txt");
 
   let elfSums = elves.map((arr) => {
     return sum(arr);
   });
 
   let total = 0;
-  let maxI = maxIndex(elfSums);
-  total += elfSums[maxI];
-  elfSums = elfSums.slice(0, maxI).concat(elfSums.slice(maxI + 1));
-  maxI = maxIndex(elfSums);
-  total += elfSums[maxI];
-  elfSums = elfSums.slice(0, maxI).concat(elfSums.slice(maxI + 1));
-  maxI = maxIndex(elfSums);
-  total += elfSums[maxI];
-
+  for (let i = 0; i < 3; i++) {
+    const maxI = maxIndex(elfSums);
+    total += elfSums[maxI];
+    elfSums = elfSums.slice(0, maxI).concat(elfSums.slice(maxI + 1));
+  }
 
   console.log(total);
 }

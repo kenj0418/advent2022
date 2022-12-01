@@ -52,6 +52,15 @@ const readArrayFromFile = (filename, delim) => {
   return readStringArrayFromFile(filename, delim).map((st) => { return parseInt(st) });
 }
 
+const readSingleLineArraysFromFile = (filename) => {
+  // lists with one element per line, blank line between separate lists
+  return fs.readFileSync(filename).toString().split("\n\n").map((data) => {
+    return data.split("\n").map((n) => {
+      return parseInt(n);
+    });
+  });
+}
+
 const readListsFromFile = (filename) => {
   const parseLine = (line) => {
     return line.split(",");
@@ -84,4 +93,4 @@ const parseRecords = (lines, rowInitialFunc, rowAccumulatorFunc) => {
   return records;
 }
 
-module.exports = { sum, maxIndex, permutator, powerSet, readArrayFromFile, readStringArrayFromFile, readListsFromFile, parseRecords }
+module.exports = { sum, maxIndex, permutator, powerSet, readArrayFromFile, readSingleLineArraysFromFile, readStringArrayFromFile, readListsFromFile, parseRecords }
