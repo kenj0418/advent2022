@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { sum, maxIndex, readStringArrayFromFile, readArrayFromFile, readSingleLineArraysFromFile } = require("./lib");
+const { sum, readStringArrayFromFile } = require("./lib");
 
 const playerScore = {
   X: 1,
