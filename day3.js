@@ -1,29 +1,25 @@
 const fs = require("fs");
 const { sum, readStringArrayFromFile } = require("./lib");
 
-const getCommonItem = (sackPair) => {
-  const sack1 = sackPair[0];
-  const sack2 = sackPair[1];
+const getCommonItem = (sacks) => {
+  const primeSack = sacks[0];
+  const otherSacks = sacks.slice(1);
 
-  for (let i = 0; i < sack1.length; i++) {
-    if (sack2.indexOf(sack1[i]) >= 0) {
-      return sack1[i];
+  for (let i = 0; i < primeSack.length; i++) {
+    let found = true;
+
+    for (let j = 0; j < otherSacks.length && found; j++) {
+      if (otherSacks[j].indexOf(primeSack[i]) < 0) {
+        found = false;
+      }
+    }
+
+    if (found) {
+      return primeSack[i];
     }
   }
-  return '?';
-}
 
-const getCommonItem2 = (sackPair) => {
-  const sack1 = sackPair[0];
-  const sack2 = sackPair[1];
-  const sack3 = sackPair[2];
-
-  for (let i = 0; i < sack1.length; i++) {
-    if (sack2.indexOf(sack1[i]) >= 0 && sack3.indexOf(sack1[i]) >= 0) {
-      return sack1[i];
-    }
-  }
-  return '?';
+  throw new Error('NO COMMON ITEM');
 }
 
 const getPriority = (item) => {
@@ -37,33 +33,29 @@ const getPriority = (item) => {
   }
 };
 
-const runpart2 = () => {
-  const allSacks = readStringArrayFromFile("./input/day3.txt", "\n");
-  let sacks = [];
-  for (let i = 0; i < allSacks.length; i += 3) {
-    sacks.push([allSacks[i], allSacks[i + 1], allSacks[i + 2]]);
-  }
-
-  const commonItems = sacks.map(getCommonItem2);
+const report = (sacks, st) => {
+  const commonItems = sacks.map(getCommonItem);
   const total = sum(commonItems.map(getPriority));
-
-  console.log(`part 2: ${total}`);
+  console.log(`${st}: ${total}`);
 }
 
 const run = () => {
-  const sacks = readStringArrayFromFile("./input/day3.txt", "\n").map((line) => {
+  const allSacks = readStringArrayFromFile("./input/day3.txt", "\n");
+
+  const splitSacks = allSacks.map((line) => {
     return [
       line.slice(0, line.length / 2),
       line.slice(line.length / 2)
     ];
   });
 
-  const commonItems = sacks.map(getCommonItem);
-  const total = sum(commonItems.map(getPriority));
+  let sackGroups = [];
+  for (let i = 0; i < allSacks.length; i += 3) {
+    sackGroups.push([allSacks[i], allSacks[i + 1], allSacks[i + 2]]);
+  }
 
-  console.log(`part 1: ${total}`);
-
-  runpart2();
+  report(splitSacks, 'Part 1');
+  report(sackGroups, 'Part 2');
 }
 
 module.exports = { run };
