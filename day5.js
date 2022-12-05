@@ -29,10 +29,20 @@ const moveBox = (boxes, from, to) => {
   }
 }
 
-const performStep = (boxes, step) => {
+const performStep1 = (boxes, step) => {
   for (let i = 0; i < step.n; i++) {
     moveBox(boxes, step.from, step.to);
   }
+}
+
+const performStep2 = (boxes, step) => {
+  let tempStack = []
+  for (let i = 0; i < step.n; i++) {
+    let tempBox = boxes[step.from].pop();
+    tempStack.unshift(tempBox);
+  }
+
+  boxes[step.to] = boxes[step.to].concat(tempStack);
 }
 
 const getMessage = (boxes) => {
@@ -54,12 +64,10 @@ const run = () => {
   });
 
   for (let i = 0; i < steps.length; i++) {
-    performStep(boxes, steps[i]);
+    performStep2(boxes, steps[i]);
   }
 
-
-  console.log(`part 1: ${getMessage(boxes)}`);
-  // console.log(`part 2: ${overlapping.length}`);
+  console.log(`result: ${getMessage(boxes)}`);
 }
 
 module.exports = { run };
