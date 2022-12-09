@@ -64,8 +64,7 @@ const run = (filename) => {
     makeMove(state, move)
   });
 
-  console.log(`Part 1: ${Object.keys(state.visited).length}`);
-  console.log(`Part 2: ${0}`);
+  console.log(`Result: ${Object.keys(state.visited).length}`);
 
 }
 
