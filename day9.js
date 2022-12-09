@@ -1,6 +1,8 @@
 const fs = require("fs");
 const { readStringArrayFromFile, sum } = require("./lib");
 
+const numKnots = 10;
+
 const moveInfo = {
   'R': { x: 1, y: 0 },
   'L': { x: -1, y: 0 },
@@ -8,43 +10,42 @@ const moveInfo = {
   'D': { x: 0, y: 1 }
 };
 
-const distanceHeadTail = (state) => {
-  return Math.max(Math.abs(state.head.x - state.tail.x), Math.abs(state.head.y - state.tail.y));
+const distanceBetween = (k1, k2) => {
+  return Math.max(Math.abs(k1.x - k2.x), Math.abs(k1.y - k2.y));
 }
 
-const adjustTail = (state) => {
-  if (distanceHeadTail(state) <= 1) {
+const adjustKnots = (k1, k2) => {
+  if (distanceBetween(k1, k2) <= 1) {
     return; // no action needed
   }
 
-  const xDir = Math.sign(state.head.x - state.tail.x);
-  const yDir = Math.sign(state.head.y - state.tail.y);
+  const xDir = Math.sign(k1.x - k2.x);
+  const yDir = Math.sign(k1.y - k2.y);
 
-  if (state.head.x == state.tail.x) {
+  if (k1.x == k2.x) {
     // same col
-    state.tail.y += yDir;
-  } else if (state.head.y == state.tail.y) {
+    k2.y += yDir;
+  } else if (k1.y == k2.y) {
     // same row
-    state.tail.x += xDir;
+    k2.x += xDir;
   } else {
     // diag
-    state.tail.x += xDir;
-    state.tail.y += yDir;
-  }
-
-  if (distanceHeadTail(state) > 1) {
-    throw new Error(`Move failed: ${JSON.stringify(state)}`);
+    k2.x += xDir;
+    k2.y += yDir;
   }
 }
 
 const makeMove = (state, move) => {
   const info = moveInfo[move];
 
-  state.head.x += info.x;
-  state.head.y += info.y;
+  state.knots[0].x += info.x;
+  state.knots[0].y += info.y;
 
-  adjustTail(state);
-  state.visited[`${state.tail.x}: ${state.tail.y}`] = true;
+  for (let i = 1; i < numKnots; i++) {
+    adjustKnots(state.knots[i - 1], state.knots[i]);
+  }
+
+  state.visited[`${state.knots[numKnots - 1].x}:${state.knots[numKnots - 1].y}`] = true;
 }
 
 const run = (filename) => {
@@ -55,14 +56,7 @@ const run = (filename) => {
   });
 
   let state = {
-    head: {
-      x: 0,
-      y: 0
-    },
-    tail: {
-      x: 0,
-      y: 0
-    },
+    knots: [...Array(numKnots).keys()].map(() => { return { x: 0, y: 0 } }),
     visited: {} // { "0:0": true }
   };
 
