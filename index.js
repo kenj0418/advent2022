@@ -1,1 +1,2 @@
-const day = require("./day8.js").run("./input/day8.txt");
+const day = 9;
+require(`./day${day}.js`).run(`./input/day${day}.txt`);
