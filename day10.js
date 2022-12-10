@@ -37,10 +37,10 @@ const run = (filename) => {
     pc: 0,
     prog,
     clock: 1,
-    valuesAt: [{ x: 1 }]
+    valuesAt: [{ x: 1 }, { x: 1 }]
   }
 
-  const stopAt = 225;
+  const stopAt = 240;
   while (sys.clock < stopAt) {
     step(sys);
   }
@@ -49,9 +49,26 @@ const run = (filename) => {
   const values = breakPoints.map((bp) => { return sys.valuesAt[bp].x * bp; });
   const part1 = sum(values);
 
-  console.log(`Part 1: ${part1}`);
-  console.log(`Part 2: ${0}`);
 
+  console.log(`Part 1: ${part1}`);
+
+  console.log('Part 2:\n\n');
+  let st = "";
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 40; col++) {
+      const clock = 1 + row * 40 + col;
+      const xVal = sys.valuesAt[clock] && sys.valuesAt[clock].x;
+      // console.log(`@${clock}: ${xVal} >= ${col} - 1 && ${xVal} <= ${col} + 1`);
+      if (xVal >= col - 1 && xVal <= col + 1) {
+        st += "#"
+      } else {
+        st += "."
+      }
+    }
+    st += "\n";
+  }
+
+  console.log(st);
 }
 
 module.exports = { run };
