@@ -70,16 +70,20 @@ const run = (filename) => {
 
   while (!distances[startRow][startCol]) {
     updateDistances(elevations, distances);
-    // console.log(dump(distances));
+  }
+  const part1 = distances[startRow][startCol] - 1;
+  console.log(`Part 1: ${part1}`);
+
+  let minTrailDist = 9999;
+  for (let row = 0; row < distances.length; row++) {
+    for (let col = 0; col < distances[0].length; col++) {
+      if (elevations[row][col] == startHeight && distances[row][col] && distances[row][col] < minTrailDist) {
+        minTrailDist = distances[row][col];
+      }
+    }
   }
 
-  const part1 = distances[startRow][startCol] - 1;
-  console.log(dump(distances));
-
-  console.log(`Part 1: ${part1}`);
-  console.log(`Part 2: ${0}`);
-
+  console.log(`Part 2: ${minTrailDist - 1}`);
 }
 
 module.exports = { run };
-// not 474 or 475 (was 472, I was treating S and E as one to high/low than should have)
