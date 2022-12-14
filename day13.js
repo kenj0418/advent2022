@@ -1,12 +1,23 @@
 const fs = require("fs");
-const { readStringArrayFromFile, sum } = require("./lib");
+const { readStringArrayFromFile } = require("./lib");
 
-const compareArray = (l1, l2) => {
-  console.log(`compareArray ${JSON.stringify(l1)} and ${JSON.stringify(l2)}`);
+const compare = (o1, o2) => {
+  console.log(`comparing ${JSON.stringify(o1)} and ${JSON.stringify(o2)}`);
+  const l1 = Array.isArray(o1) ? o1 : [o1];
+  const l2 = Array.isArray(o2) ? o2 : [o2];
+
   let i = 0;
-
   while (i < l1.length && i < l2.length) {
-    let comp = compare(l1[i], l2[i]);
+    let comp;
+
+    if (!Array.isArray(l1[i]) && !Array.isArray(l2[i])) {
+      comp = l1[i] - l2[i];
+      console.log(`@${i + 1} comp (int) ${comp}`);
+    } else {
+      comp = compare(l1[i], l2[i]);
+      console.log(`@${i + 1} comp (list) ${comp}`);
+    }
+
     if (comp != 0) {
       return comp;
     } else {
@@ -14,26 +25,16 @@ const compareArray = (l1, l2) => {
     }
   }
 
-  if (i >= l1.length) {
+  console.log(`lengths: i: ${i + 1} l1: ${l1.length} l2: ${l2.length}`);
+
+  if (i >= l1.length && i >= l2.length) {
+    return 0;
+  } else if (i >= l1.length) {
     return -1;
   } else if (i >= l2.length) {
     return 1;
   } else {
-    return 0;
-  }
-};
-
-const compare = (o1, o2) => {
-  console.log(`comparing ${JSON.stringify(o1)} and ${JSON.stringify(o2)}`);
-  if (Array.isArray(o1) && Array.isArray(o2)) {
-    return compareArray(o1, o2);
-  } else if (Array.isArray(o1)) {
-    return compareArray(o1, [o2]);
-  } else if (Array.isArray(o2)) {
-    return compareArray([o1], o2);
-  } else {
-    console.log(`result: ${o1 - o2}`);
-    return o1 - o2;
+    throw new Error("how did we get here?");
   }
 }
 
@@ -47,7 +48,8 @@ const tokenize = (st) => {
       throw new Error(`Unable to parse remainder: ${remaining}`);
     }
     if (match[1].match(/[0-9]+/)) {
-      tokens.push(parseInt(match[1]));
+      const intValue = parseInt(match[1]);
+      tokens.push(intValue ? intValue : -1); // since zero seems to be causing issues
     } else {
       tokens.push(match[1]);
     }
@@ -59,13 +61,11 @@ const tokenize = (st) => {
 
 
 const parse = (tokens) => {
-  // console.log(`parse: ${JSON.stringify(tokens)}`);
-
   if (tokens[0] == ']') {
     return "wat"
   }
   if (tokens[0] != '[') {
-    return tokens[0]; // expr:= #
+    return tokens[0];
   }
 
   let parsed = [];
@@ -97,14 +97,8 @@ const parse = (tokens) => {
       }
     } else {
       currTokens.push(token);
-      // console.log(`num ${numParens} value=${token}`);
     }
   })
-
-  // [1,[2,[3,[4,[5,6,7]]]],8,9]
-  // [3]
-  // [[[]]]
-  // [1,2,5,1,1]
 
   return parsed;
 }
@@ -114,17 +108,11 @@ const run = (filename) => {
     return data.split("\n").map(tokenize);
   });
 
-  // console.log(JSON.stringify(parse(tokenize('[1,[2,[3,[4,[5,6,7]]]],8,9]'))));
-  // console.log(JSON.stringify(parse(tokenize('[3]'))));
-  // console.log(JSON.stringify(parse(tokenize('[[[]]]'))));
-  // console.log(JSON.stringify(parse(tokenize('[1,2,3,4,5]'))));
-
   let sumIndexes = 0;
   for (let i = 0; i < packets.length; i++) {
     const cmp = compare(parse(packets[i][0]), parse(packets[i][1]));
-    console.log(`RESULT @ ${i + 1}: ${cmp}`);
+    console.log(`RESULT @ ${i + 1}: ${cmp} ${cmp < 0 ? "ADDING" : ""}\n`);
     if (cmp < 0) {
-      // console.log(`valid @${i} ${cmp}: ${JSON.stringify(packets[i][0])} AND ${JSON.stringify(packets[i][1])}`);
       sumIndexes += i + 1;
     }
   }
@@ -136,3 +124,6 @@ const run = (filename) => {
 module.exports = { run };
 
 // part 1 too high: 5876
+// part 1 too low:  5390 (but right answer for someone)
+// fuck, back at 5876
+// part 1 finally: 5843
