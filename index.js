@@ -1,2 +1,2 @@
-const day = 12;
+const day = 13;
 require(`./day${day}.js`).run(`./input/day${day}.txt`);
